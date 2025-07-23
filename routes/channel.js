@@ -102,4 +102,65 @@ router.get('/videos', authenticateToken, async (req, res) => {
   }
 });
 
+// 영상별 댓글 참여율 가져오기 API
+router.get('/videos/comments-rate', authenticateToken, async (req, res) => {
+  const { channel_id } = req.query;
+  if (!channel_id) {
+    return res.status(400).json({ success: false, message: 'channel_id is required' });
+  }
+  try {
+    // 유저의 채널 id 검사
+    const channelQuery = `
+      SELECT id FROM "Channel" WHERE id = $1 AND user_id = $2 AND is_deleted = false
+    `;
+    const channelResult = await pool.query(channelQuery, [channel_id, req.user.id]);
+    if (channelResult.rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'No channel found for this user' });
+    }
+    // 최근 5개 영상 조회
+    const videoQuery = `
+      SELECT v.id, v.video_name, v.upload_date
+      FROM "Video" v
+      WHERE v.channel_id = $1 AND v.is_deleted = false
+      ORDER BY v.created_at DESC
+      LIMIT 5
+    `;
+    const videoResult = await pool.query(videoQuery, [channel_id]);
+    const videos = videoResult.rows;
+    if (videos.length === 0) {
+      return res.status(200).json({ success: true, data: [] });
+    }
+    // 각 영상별 최신 스냅샷에서 댓글수, 조회수, 참여율 계산
+    const results = [];
+    for (const video of videos) {
+      const snapshotQuery = `
+        SELECT comment_count, view_count
+        FROM "Video_snapshot"
+        WHERE video_id = $1 AND is_deleted = false
+        ORDER BY created_at DESC
+        LIMIT 1
+      `;
+      const snapshotResult = await pool.query(snapshotQuery, [video.id]);
+      const snapshot = snapshotResult.rows[0] || {};
+      const commentCount = snapshot.comment_count ?? 0;
+      const viewCount = snapshot.view_count ?? 0;
+      // 댓글 참여율 계산 (조회수 0이면 0%)
+      const commentRate = viewCount > 0 ? ((commentCount / viewCount) * 100).toFixed(2) + '%' : '0.00%';
+      results.push({
+        videoId: video.id,
+        title: video.video_name,
+        commentCount,
+        viewCount,
+        commentRate,
+        uploadDate: video.upload_date
+      });
+    }
+    res.status(200).json({ success: true, data: results });
+  } catch (error) {
+    console.error('영상별 댓글 참여율 조회 실패:', error.message);
+    res.status(500).json({ error: '영상별 댓글 참여율 조회 실패' });
+  }
+});
+
+
 module.exports = router; 

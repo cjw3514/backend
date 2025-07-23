@@ -22,6 +22,7 @@ enum Status {
   approved
   rejected
   deleted
+  none
 }
 
 model User {
@@ -125,8 +126,8 @@ model Comment {
   author_name  String?
   author_id    String?      @db.VarChar(30)
   comment      String?
-  sentiment    Sentiment?   @default(none)
-  type         CommentType? @default(none)
+  sentiment    Sentiment?   @default(positive)
+  type         CommentType? @default(normal)
   status       Status?      @default(none)
   comment_date DateTime?    @db.Timestamp(6)
   is_parent    Boolean?

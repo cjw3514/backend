@@ -9,6 +9,12 @@ services:
       - "3000:3000"
     env_file:
       - .env
+    environment:
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=teamF
+      - POSTGRES_PASSWORD=2025
+      - POSTGRES_DB=teamFdb
     volumes:
       - .:/app
     depends_on:
