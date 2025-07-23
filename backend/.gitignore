@@ -1,0 +1,12 @@
+node_modules/
+
+.env
+.env.*
+
+n8n-workflows/
+
+.DS_Store
+/generated/prisma
+n8n-data/
+
+pg_data/
