@@ -187,7 +187,7 @@ router.get('/videos/likes', authenticateToken, async (req, res) => {
   }
 });
 // 영상별 댓글 참여율 가져오기 API
-router.get('/videos/comments-rate', authenticateToken, async (req, res) => {
+router.get('/videos/comments', authenticateToken, async (req, res) => {
   const { channel_id } = req.query;
   if (!channel_id) {
     return res.status(400).json({ success: false, message: 'channel_id is required' });
