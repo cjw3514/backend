@@ -10,21 +10,18 @@ datasource db {
 enum Sentiment {
   positive
   negative
-  none
 }
 
 enum CommentType {
   normal
   malicious
   spam
-  none
 }
 
 enum Status {
   approved
   rejected
   deleted
-  none
 }
 
 model User {
