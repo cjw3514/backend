@@ -37,4 +37,36 @@ router.post('/videos/:video_id/comments/analysis', async (req, res) => {
   }
 });
 
+// 긍정적 댓글만 조회하는 API
+router.get('/videos/:video_id/comments/positive', async (req, res) => {
+  const { video_id } = req.params;
+  try {
+    const selectQuery = `
+      SELECT * FROM "Comment"
+      WHERE video_id = $1 AND sentiment = 'positive';
+    `;
+    const result = await pool.query(selectQuery, [video_id]);
+    res.status(200).json({ success: true, data: result.rows });
+  } catch (error) {
+    console.error('긍정 댓글 조회 실패:', error.message);
+    res.status(500).json({ error: '긍정 댓글 조회 실패' });
+  }
+});
+
+// 부정적 댓글만 조회하는 API
+router.get('/videos/:video_id/comments/negative', async (req, res) => {
+  const { video_id } = req.params;
+  try {
+    const selectQuery = `
+      SELECT * FROM "Comment"
+      WHERE video_id = $1 AND sentiment = 'negative';
+    `;
+    const result = await pool.query(selectQuery, [video_id]);
+    res.status(200).json({ success: true, data: result.rows });
+  } catch (error) {
+    console.error('부정 댓글 조회 실패:', error.message);
+    res.status(500).json({ error: '부정 댓글 조회 실패' });
+  }
+});
+
 module.exports = router; 

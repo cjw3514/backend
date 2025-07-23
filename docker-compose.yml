@@ -19,6 +19,7 @@ services:
     depends_on:
       - n8n
       - postgres
+    command: sh -c "npx prisma generate && npm run dev"
   n8n:
     image: n8nio/n8n:1.102.0
     container_name: n8n
@@ -48,6 +49,7 @@ services:
       - "5432:5432"
     volumes:
       - ./pgdata:/var/lib/postgresql/data
+      - ./initdb:/docker-entrypoint-initdb.d
 volumes:
   n8n-data:
     external: true

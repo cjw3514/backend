@@ -42,6 +42,9 @@ app.use('/auth', authRoutes);
 const videoRoutes = require('./routes/videos');
 app.use('/api', videoRoutes);
 
+const channelRouter = require('./routes/channel');
+app.use('/api/channel', channelRouter);
+
 // 기본 라우터
 app.get('/', (req, res) => {
   res.send('Backend server is running!');
