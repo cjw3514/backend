@@ -7,16 +7,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Sentiment {
-  positive
-  negative
-}
+const COMMENT_TYPE = {
+  0: 'none',
+  1: 'positive',
+  2: 'negative'
+};
 
-enum CommentType {
-  normal
-  malicious
-  spam
-}
 
 enum Status {
   approved
@@ -69,7 +65,7 @@ model Other_channel {
 }
 
 model Video {
-  id                  String           @id @db.VarChar(20)
+  id                  String           @id 
   channel_id          Int
   video_name          String?
   video_thumbnail_url String?
@@ -126,14 +122,14 @@ model Comment {
   author_name  String?
   author_id    String?      @db.VarChar(30)
   comment      String?
-  sentiment    Sentiment?   @default(positive)
-  type         CommentType? @default(normal)
-  status       Status?      @default(none)
+  comment_type Int?
   comment_date DateTime?    @db.Timestamp(6)
   is_parent    Boolean?
+  is_filtered  Boolean     @default(false)
   created_at   DateTime     @default(now()) @db.Timestamp(6)
   updated_at   DateTime     @default(now()) @db.Timestamp(6)
   video_id     String       @db.VarChar(20)
+  youtube_comment_id String
   Video        Video        @relation(fields: [video_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
@@ -146,3 +142,4 @@ model Comment_summary {
   created_at     DateTime @default(now()) @db.Timestamp(6)
   Video          Video    @relation(fields: [video_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
+

@@ -29,4 +29,5 @@
    docker exec -it postgres sh
    psql -U teamF -d teamFdb
    ```
+
    그 다음 sql문 실행
